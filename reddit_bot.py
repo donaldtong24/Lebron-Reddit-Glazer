@@ -1,26 +1,21 @@
 import praw
-import config
 import time
 import os
 
 
-def bot_login():
-    print("Logging in...")
-    r = praw.Reddit(client_id=config.client_id,
-            client_secret=config.client_secret,
-            password=config.password,
-            user_agent="Lebron Glazer by /u/DTRedditBot",
-            username=config.username)
-    print("Logged in!")
-    return r
+def authenicate():
+    print("Authenicating...")
+    reddit = praw.Reddit('lebronbot',user_agent="Lebron Glazer by /u/DTRedditBot")
+    print("Authenicated as {}".format(reddit.user.me()))
+    return reddit
 
-def run_bot(r,comments_replied_to):
+def run_bot(reddit,comments_replied_to):
     print("Obtaining 25 comments...")
 
 
 
-    for comment in r.subreddit('test').comments(limit=25):
-        if "lebron" in comment.body.lower() and comment.id not in comments_replied_to and comment.author != r.user.me():
+    for comment in reddit.subreddit('test').comments(limit=25):
+        if "lebron" in comment.body.lower() and comment.id not in comments_replied_to and comment.author != reddit.user.me():
             print("String with \"lebron\" found in comment " + comment.id)
             comment.reply("Lebron James is the best! [Here](https://i.ytimg.com/vi/y59-J0Q9v2o/sddefault.jpg) is an image of the glorious king!")
             comments_replied_to.append(comment.id)
@@ -44,6 +39,11 @@ def get_saved_comments():
 
 comments_replied_to = get_saved_comments()
 print (comments_replied_to)
-r = bot_login()
-while True:
-    run_bot(r,comments_replied_to)
+
+def main():
+    reddit = authenicate()
+    while True:
+        run_bot(reddit,comments_replied_to)
+
+if __name__ == "__main__":
+    main()
